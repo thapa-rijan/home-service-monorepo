@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ReactNode } from "react";
 import "./globals.css";
+import { DashboardLayout } from "@/components/dashboard-layout";
 
 export const metadata: Metadata = {
   title: "Home Service - Admin",
@@ -10,7 +11,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="bg-gray-50">
+        <DashboardLayout>{children}</DashboardLayout>
+      </body>
     </html>
   );
 }
