@@ -1,0 +1,26 @@
+{
+  "name": "home-service-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean",
+    "dev:website": "turbo run dev --filter=website",
+    "dev:admin": "turbo run dev --filter=admin",
+    "build:website": "turbo run build --filter=website",
+    "build:admin": "turbo run build --filter=admin"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0"
+  },
+  "packageManager": "yarn@1.22.0",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
