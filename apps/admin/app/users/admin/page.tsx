@@ -12,6 +12,7 @@ export default function AdminUsersPage() {
         <p className="text-gray-700">
           Admin users management content goes here
         </p>
+      
       </div>
     </div>
   );
