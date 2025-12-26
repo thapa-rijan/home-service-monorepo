@@ -1,126 +1,93 @@
-import type { ApiResponse, Service, Booking, User } from "@home-service/shared";
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from "axios";
+import { parseCookies } from "nookies";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+// API Configuration
+export const API_CONFIG = {
+  BASE_URL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000",
+  TIMEOUT: 30000,
+  HEADERS: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+};
 
-export class ApiClient {
-  private baseUrl: string;
+// Create axios instance
+const apiClient: AxiosInstance = axios.create({
+  baseURL: API_CONFIG.BASE_URL,
+  timeout: API_CONFIG.TIMEOUT,
+  headers: API_CONFIG.HEADERS,
+});
 
-  constructor(baseUrl: string = API_BASE_URL) {
-    this.baseUrl = baseUrl;
-  }
+// Request interceptor - Add auth token to requests
+apiClient.interceptors.request.use(
+  (config) => {
+    const cookies = parseCookies();
+    const token = cookies.accessToken;
 
-  private async request<T>(
-    endpoint: string,
-    options?: RequestInit
-  ): Promise<ApiResponse<T>> {
-    try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
-        ...options,
-        headers: {
-          "Content-Type": "application/json",
-          ...options?.headers,
-        },
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return {
-          success: false,
-          error: data.message || "An error occurred",
-        };
-      }
-
-      return {
-        success: true,
-        data,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "Network error",
-      };
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-  }
 
-  // Services API
-  async getServices() {
-    return this.request<Service[]>("/services");
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
+);
 
-  async getService(id: string) {
-    return this.request<Service>(`/services/${id}`);
+// Response interceptor - Handle errors globally
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    // Handle common errors
+    if (error.response) {
+      const status = error.response.status;
+
+      switch (status) {
+        case 401:
+          // Unauthorized - redirect to login or refresh token
+          if (typeof window !== "undefined") {
+            console.error("Unauthorized - Please login again");
+          }
+          break;
+        case 403:
+          console.error("Forbidden - You do not have permission");
+          break;
+        case 404:
+          console.error("Resource not found");
+          break;
+        case 500:
+          console.error("Internal server error");
+          break;
+        default:
+          console.error("An error occurred:", error.message);
+      }
+    } else if (error.request) {
+      console.error("No response received from server");
+    } else {
+      console.error("Error setting up request:", error.message);
+    }
+
+    return Promise.reject(error);
   }
+);
 
-  async createService(
-    service: Omit<Service, "id" | "createdAt" | "updatedAt">
-  ) {
-    return this.request<Service>("/services", {
-      method: "POST",
-      body: JSON.stringify(service),
-    });
-  }
+// Generic API methods
+export const api = {
+  get: <T = any>(url: string, config?: AxiosRequestConfig) =>
+    apiClient.get<T>(url, config),
 
-  async updateService(id: string, service: Partial<Service>) {
-    return this.request<Service>(`/services/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(service),
-    });
-  }
+  post: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) =>
+    apiClient.post<T>(url, data, config),
 
-  async deleteService(id: string) {
-    return this.request<void>(`/services/${id}`, {
-      method: "DELETE",
-    });
-  }
+  put: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) =>
+    apiClient.put<T>(url, data, config),
 
-  // Bookings API
-  async getBookings() {
-    return this.request<Booking[]>("/bookings");
-  }
+  patch: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) =>
+    apiClient.patch<T>(url, data, config),
 
-  async getBooking(id: string) {
-    return this.request<Booking>(`/bookings/${id}`);
-  }
+  delete: <T = any>(url: string, config?: AxiosRequestConfig) =>
+    apiClient.delete<T>(url, config),
+};
 
-  async createBooking(
-    booking: Omit<Booking, "id" | "createdAt" | "updatedAt">
-  ) {
-    return this.request<Booking>("/bookings", {
-      method: "POST",
-      body: JSON.stringify(booking),
-    });
-  }
-
-  async updateBooking(id: string, booking: Partial<Booking>) {
-    return this.request<Booking>(`/bookings/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(booking),
-    });
-  }
-
-  async cancelBooking(id: string) {
-    return this.request<Booking>(`/bookings/${id}/cancel`, {
-      method: "POST",
-    });
-  }
-
-  // Users API
-  async getUsers() {
-    return this.request<User[]>("/users");
-  }
-
-  async getUser(id: string) {
-    return this.request<User>(`/users/${id}`);
-  }
-
-  async updateUser(id: string, user: Partial<User>) {
-    return this.request<User>(`/users/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(user),
-    });
-  }
-}
-
-export const apiClient = new ApiClient();
+export default apiClient;
