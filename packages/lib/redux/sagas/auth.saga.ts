@@ -1,7 +1,7 @@
 import { call, put, takeLatest } from "redux-saga/effects";
 import { setCookie, destroyCookie } from "nookies";
-import { authApi } from "@home-service/lib/api";
-import type { LoginResponse } from "@home-service/lib/api";
+import { authApi } from "../../api";
+import type { LoginResponse } from "../../api";
 import {
   LOGIN_REQUEST,
   LOGOUT_REQUEST,

@@ -4,8 +4,8 @@ import {
   compose,
 } from "redux";
 import createSagaMiddleware from "redux-saga";
-import rootReducer, { RootState } from "./reducers";
-import rootSaga from "./sagas";
+import rootReducer, { RootState } from "./reducers/index";
+import rootSaga from "./sagas/index";
 
 // Create the saga middleware
 const sagaMiddleware = createSagaMiddleware();

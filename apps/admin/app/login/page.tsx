@@ -1,10 +1,11 @@
 "use client";
 
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { loginRequest } from "@/redux/actions/auth.actions";
+import { useAppDispatch, useAppSelector, loginRequest } from "@home-service/lib";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LoginForm, type LoginFormData } from "@shared";
+import { Button } from "@ui";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const dispatch = useAppDispatch();
@@ -19,21 +20,28 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, router]);
 
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
+
   const onSubmit = (data: LoginFormData) => {
     dispatch(loginRequest(data));
   };
 
   return (
-    <LoginForm
-      onSubmit={onSubmit}
-      loading={loading}
-      error={error}
-      defaultValues={{
-        email: "rijan4568@gmail.com",
-        password: "11111111",
-      }}
-      title="Admin Dashboard"
-      subtitle="Sign in to access the admin panel"
-    />
+    <>
+      <LoginForm
+        onSubmit={onSubmit}
+        loading={loading}
+        defaultValues={{
+          email: "rijan4568@gmail.com",
+          password: "11111111",
+        }}
+        title="Admin Dashboard"
+        subtitle="Sign in to access the admin panel"
+      />
+    </>
   );
 }

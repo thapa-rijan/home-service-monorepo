@@ -1,41 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import {
+  useAppDispatch,
+  useAppSelector,
+  loginRequest,
+} from "@home-service/lib";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LoginForm, type LoginFormData } from "@shared";
+import { toast } from "sonner";
 
-export default function WebsiteLoginPage() {
+export default function LoginPage() {
+  const dispatch = useAppDispatch();
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { loading, error, isAuthenticated } = useAppSelector(
+    (state) => state.auth
+  );
 
-  const onSubmit = async (data: LoginFormData) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      // TODO: Implement actual login logic here
-      // For now, just simulate a delay
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      console.log("Login data:", data);
-
-      // Redirect to home page after successful login
+  useEffect(() => {
+    if (isAuthenticated) {
       router.push("/");
-    } catch (err) {
-      setError("Login failed. Please try again.");
-    } finally {
-      setLoading(false);
     }
+  }, [isAuthenticated, router]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
+
+  const onSubmit = (data: LoginFormData) => {
+    dispatch(loginRequest(data));
   };
 
   return (
-    <LoginForm
-      onSubmit={onSubmit}
-      loading={loading}
-      error={error}
-      title="Welcome to Home Service"
-      subtitle="Sign in to book services"
-    />
+    <>
+      <LoginForm
+        onSubmit={onSubmit}
+        loading={loading}
+        defaultValues={{
+          email: "rijan4568@gmail.com",
+          password: "11111111",
+        }}
+        title="Admin Dashboard"
+        subtitle="Sign in to access the admin panel"
+      />
+    </>
   );
 }
