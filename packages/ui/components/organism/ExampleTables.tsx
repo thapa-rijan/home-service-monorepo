@@ -1,7 +1,6 @@
 import React from "react";
 import { DataTable, TableColumn, TableAction } from "./DataTable";
 
-// Example: Bookings Table
 interface Booking {
   id: string;
   customerName: string;
