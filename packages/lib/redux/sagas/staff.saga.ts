@@ -7,13 +7,11 @@ import {
 } from "../constants/staff.constants";
 import { fetchStaffSuccess, fetchStaffFailure } from "../actions/staff.actions";
 
-// Worker saga
 function* handleFetchStaff(action: any) {
   try {
     const params = action.payload || { page: 1, limit: 50 };
     const users: any = yield call(authApi.getStaff, params);
 
-    // auth/staff returns an array of users
     yield put(
       fetchStaffSuccess({
         users: users || [],
