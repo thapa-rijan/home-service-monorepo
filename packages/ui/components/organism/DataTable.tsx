@@ -1,6 +1,5 @@
 import React from "react";
 
-// Generic column configuration
 export interface TableColumn<T = any> {
   key: string;
   label: string;
