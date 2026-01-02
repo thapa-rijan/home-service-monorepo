@@ -7,15 +7,8 @@ import {
   SET_AUTH_TOKEN,
   CLEAR_AUTH,
 } from "../constants/auth.constants";
-import { AuthActionTypes, User } from "../actions/auth.actions";
-
-export interface AuthState {
-  isAuthenticated: boolean;
-  user: User | null;
-  token: string | null;
-  loading: boolean;
-  error: string | null;
-}
+import { AuthActionTypes } from "../actions/auth.actions";
+import { AuthState, User } from "../interfaces";
 
 const initialState: AuthState = {
   isAuthenticated: false,

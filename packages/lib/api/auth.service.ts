@@ -91,6 +91,20 @@ export const authApi = {
   },
 
   /**
+   * Get staff list
+   */
+  getStaff: async (params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+  }): Promise<User[]> => {
+    const response = await api.get<User[]>(API_ENDPOINTS.AUTH.STAFF, {
+      params,
+    });
+    return response.data;
+  },
+
+  /**
    * Forgot password
    */
   forgotPassword: async (email: string): Promise<AuthResponse> => {

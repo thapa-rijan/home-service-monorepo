@@ -13,6 +13,8 @@ export {
   HSFormInput,
   HSSelect,
   HSSelectForm,
+  StaffTable,
+  StaffCard,
 } from "./components/organism";
 
 export type { InputProps } from "./components/atoms/Input";
