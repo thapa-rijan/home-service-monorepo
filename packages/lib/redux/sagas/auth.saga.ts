@@ -14,17 +14,14 @@ import {
   LoginRequestAction,
 } from "../actions/auth.actions";
 
-// Worker Saga: Login
+
 function* loginSaga(action: LoginRequestAction) {
-  try {
-    // Call API service
+  try {e
     const response: LoginResponse = yield call(authApi.login, action.payload);
 
     const { accessToken, user } = response;
-
-    // Store token in cookies
     setCookie(null, AUTH_TOKEN_KEY, accessToken, {
-      maxAge: 60 * 60, // 1 hour
+      maxAge: 60 * 60, 
       path: "/",
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
@@ -44,17 +41,14 @@ function* loginSaga(action: LoginRequestAction) {
   }
 }
 
-// Worker Saga: Logout
 function* logoutSaga() {
   try {
-    // Call API logout (optional)
+
     try {
       yield call(authApi.logout);
     } catch (e) {
       // Ignore API errors on logout
     }
-
-    // Remove token from cookies
     destroyCookie(null, AUTH_TOKEN_KEY, {
       path: "/",
     });
